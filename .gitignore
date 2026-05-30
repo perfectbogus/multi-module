@@ -1,0 +1,73 @@
+# ─────────────────────────────────────────
+# Maven
+# ─────────────────────────────────────────
+target/
+*.jar
+*.war
+*.ear
+*.class
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+
+# ─────────────────────────────────────────
+# IntelliJ IDEA
+# ─────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Exception: keep code style and run configs
+# if your team shares them via version control
+# !.idea/codeStyles/
+# !.idea/runConfigurations/
+
+# ─────────────────────────────────────────
+# Spring Boot
+# ─────────────────────────────────────────
+**/application-local.yml
+**/application-local.properties
+**/application-secret.yml
+
+# ─────────────────────────────────────────
+# Logs
+# ─────────────────────────────────────────
+*.log
+logs/
+**/logs/
+
+# ─────────────────────────────────────────
+# Docker
+# ─────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─────────────────────────────────────────
+# OS generated files
+# ─────────────────────────────────────────
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ─────────────────────────────────────────
+# Java
+# ─────────────────────────────────────────
+hs_err_pid*
+replay_pid*

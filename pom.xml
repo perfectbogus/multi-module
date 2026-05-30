@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ───────────────────────────────────────────
+         Parent: Spring Boot BOM handles dependency
+         versions for all child modules automatically
+    ─────────────────────────────────────────────── -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+        <relativePath/>
+    </parent>
+
+    <!-- ───────────────────────────────────────────
+         Root project coordinates
+         packaging=pom means this module produces
+         no JAR — it's a pure container
+    ─────────────────────────────────────────────── -->
+    <groupId>dev.perfectbogus</groupId>
+    <artifactId>multi-module</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>multi-module</name>
+    <description>Multi-module Kafka producer and consumer project</description>
+
+    <!-- ───────────────────────────────────────────
+         Child modules — IntelliJ uses this list to
+         link them in the Maven tool window
+    ─────────────────────────────────────────────── -->
+    <modules>
+        <module>kafka-producer</module>
+        <module>kafka-consumer</module>
+    </modules>
+
+    <!-- ───────────────────────────────────────────
+         Shared properties inherited by all modules
+    ─────────────────────────────────────────────── -->
+    <properties>
+        <java.version>25</java.version>
+        <spring-kafka.version>3.1.4</spring-kafka.version>
+    </properties>
+
+    <!-- ───────────────────────────────────────────
+         dependencyManagement: declares versions once
+         here so child modules just reference the
+         artifactId with no version needed
+    ─────────────────────────────────────────────── -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Kafka -->
+            <dependency>
+                <groupId>org.springframework.kafka</groupId>
+                <artifactId>spring-kafka</artifactId>
+                <version>${spring-kafka.version}</version>
+            </dependency>
+
+            <!-- Lombok (optional but handy) -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.32</version>
+                <scope>provided</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- ───────────────────────────────────────────
+         build: plugin versions shared across modules
+    ─────────────────────────────────────────────── -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>
