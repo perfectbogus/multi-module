@@ -1,3 +1,26 @@
 spring:
-  application:
-    name: kafka-producer
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      acks: all                        # wait for all replicas to confirm
+      retries: 3
+      batch-size: 16384
+      linger-ms: 5                     # small delay to allow batching
+      buffer-memory: 33554432
+      compression-type: snappy
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true       # exactly-once delivery guarantee
+        max.in.flight.requests.per.connection: 5
+        spring.json.add.type.headers: false
+
+kafka:
+  topic:
+    name: ${KAFKA_TOPIC_NAME:my-topic}
+    dlt-suffix: .DLT                   # dead letter topic suffix
+
+logging:
+  level:
+    com.example.producer: DEBUG
+    org.apache.kafka: WARN
