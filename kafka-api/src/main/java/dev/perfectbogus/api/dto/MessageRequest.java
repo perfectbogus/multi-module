@@ -1,4 +1,4 @@
-package dev.perfectbogus.kafkaproducer.dto;
+package dev.perfectbogus.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

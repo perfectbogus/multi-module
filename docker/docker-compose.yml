@@ -1,7 +1,7 @@
 version: '3.8'
 
 # ─────────────────────────────────────────────────────────────────
-# Modern Kafka setup using KRaft mode (no Zookeeper since Kafka 3.3)
+# Modern Kafka setup using KRaft mode
 # ─────────────────────────────────────────────────────────────────
 
 services:

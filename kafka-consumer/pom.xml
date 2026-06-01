@@ -23,6 +23,11 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>dev.perfectbogus</groupId>
+            <artifactId>kafka-api</artifactId>
+        </dependency>
+
         <!-- Spring Web — useful for health checks
              or exposing consumed data via REST     -->
         <dependency>

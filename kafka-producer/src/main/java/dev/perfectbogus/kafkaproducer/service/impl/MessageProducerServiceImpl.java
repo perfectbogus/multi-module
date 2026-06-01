@@ -1,6 +1,6 @@
 package dev.perfectbogus.kafkaproducer.service.impl;
 
-import dev.perfectbogus.kafkaproducer.dto.MessageRequest;
+import dev.perfectbogus.api.dto.MessageRequest;
 import dev.perfectbogus.kafkaproducer.exception.KafkaPublishException;
 import dev.perfectbogus.kafkaproducer.service.MessageProducerService;
 import lombok.RequiredArgsConstructor;

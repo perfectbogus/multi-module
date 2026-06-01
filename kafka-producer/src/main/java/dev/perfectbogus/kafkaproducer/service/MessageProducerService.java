@@ -1,6 +1,6 @@
 package dev.perfectbogus.kafkaproducer.service;
 
-import dev.perfectbogus.kafkaproducer.dto.MessageRequest;
+import dev.perfectbogus.api.dto.MessageRequest;
 import org.springframework.kafka.support.SendResult;
 
 import java.util.concurrent.CompletableFuture;

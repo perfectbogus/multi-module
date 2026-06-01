@@ -1,6 +1,6 @@
 package dev.perfectbogus.kafkaproducer.controller;
 
-import dev.perfectbogus.kafkaproducer.dto.MessageRequest;
+import dev.perfectbogus.api.dto.MessageRequest;
 import dev.perfectbogus.kafkaproducer.service.MessageProducerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
