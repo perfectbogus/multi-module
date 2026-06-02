@@ -1,26 +1,24 @@
 spring:
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}  # ← Spring manages this
     producer:
-      acks: all                        # wait for all replicas to confirm
+      acks: all
       retries: 3
       batch-size: 16384
-      linger-ms: 5                     # small delay to allow batching
+      linger-ms: 5
       buffer-memory: 33554432
       compression-type: snappy
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
-        enable.idempotence: true       # exactly-once delivery guarantee
-        max.in.flight.requests.per.connection: 5
-        spring.json.add.type.headers: false
+        enable.idempotence: true
 
 kafka:
-  topic:
-    name: ${KAFKA_TOPIC_NAME:my-topic}
-    dlt-suffix: .DLT                   # dead letter topic suffix
+  topic:                                                           # ← your custom properties
+    name: ${KAFKA_TOPIC_NAME:user-events}
+    dlt-suffix: .DLT
 
 logging:
   level:
-    com.example.producer: DEBUG
+    dev.perfectbogus.kafkaproducer: DEBUG
     org.apache.kafka: WARN

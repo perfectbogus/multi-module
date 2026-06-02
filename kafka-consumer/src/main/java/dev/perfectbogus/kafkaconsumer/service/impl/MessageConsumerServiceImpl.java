@@ -1,6 +1,7 @@
 package dev.perfectbogus.kafkaconsumer.service.impl;
 
 import dev.perfectbogus.api.event.UserEvent;
+import dev.perfectbogus.kafkaconsumer.config.ConsumerProperties;
 import dev.perfectbogus.kafkaconsumer.exception.KafkaConsumerException;
 import dev.perfectbogus.kafkaconsumer.service.MessageConsumerService;
 import lombok.RequiredArgsConstructor;
@@ -18,19 +19,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MessageConsumerServiceImpl implements MessageConsumerService {
 
-    @Value("${kafka.topic.name}")
-    private String topic;
+    private final ConsumerProperties properties;
 
     @Override
     @KafkaListener(
             topics = "${kafka.topic.name}",
-            groupId = "${spring.kafka.consumer.group-id}",
+            groupId = "${kafka.consumer.group-id}",
             containerFactory = "kafkaListenerContainerFactory"
     )
     public void consumer(@Payload UserEvent event, Acknowledgment acknowledgment) {
         String correlationId = extractCorrelationId();
         log.info("[KAFKA] message received | topic={} eventId={} eventType={} userId={} correlationId={}",
-                topic,
+                properties.getTopic().getName(),
                 event.getEventId(),
                 event.getEventType(),
                 event.getUserId(),
@@ -51,7 +51,7 @@ public class MessageConsumerServiceImpl implements MessageConsumerService {
     @Override
     @KafkaListener(
             topics = "${kafka.topic.name}.DLT",
-            groupId = "${spring.kafka.consumer.group-id}-dlt",
+            groupId = "${kafka.consumer.group-id}-dlt",
             containerFactory = "kafkaListenerContainerFactory"
     )
     public void consumeFromDlt(@Payload UserEvent event) {

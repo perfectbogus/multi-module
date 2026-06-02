@@ -1,6 +1,7 @@
 package dev.perfectbogus.kafkaproducer.service.impl;
 
 import dev.perfectbogus.api.dto.MessageRequest;
+import dev.perfectbogus.kafkaproducer.config.ProducerProperties;
 import dev.perfectbogus.kafkaproducer.exception.KafkaPublishException;
 import dev.perfectbogus.kafkaproducer.service.MessageProducerService;
 import lombok.RequiredArgsConstructor;
@@ -21,23 +22,22 @@ import java.util.concurrent.CompletableFuture;
 public class MessageProducerServiceImpl implements MessageProducerService {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
-
-    @Value("${kafka.topic.name}")
-    private String defaultTopic;
+    private final ProducerProperties properties;
 
     @Override
     public void send(MessageRequest request) {
         String topic = resolveTopic(request);
-
         ProducerRecord<String, Object> record = buildRecord(topic, request);
 
         kafkaTemplate.send(record)
                 .whenComplete((result, ex) -> {
                     if (ex != null) {
-                        log.error("[KAFKA] failed to send message | topic={} key={} error={}", topic, request.getKey(), ex.getMessage(), ex);
-                        throw new KafkaPublishException("Failed to publish message to topic: " + topic, ex);
+                        log.error("[KAFKA] Failed to send | topic={} key={} error={}",
+                                topic, request.getKey(), ex.getMessage(), ex);
+                        throw new KafkaPublishException(
+                                "Failed to publish to topic: " + topic, ex);
                     }
-                    log.info("[KAFKA] Message sent | topic={} partition={} offset={} key={}",
+                    log.info("[KAFKA] Sent | topic={} partition={} offset={} key={}",
                             result.getRecordMetadata().topic(),
                             result.getRecordMetadata().partition(),
                             result.getRecordMetadata().offset(),
@@ -48,24 +48,27 @@ public class MessageProducerServiceImpl implements MessageProducerService {
     @Override
     public CompletableFuture<SendResult<String, Object>> sendAsync(MessageRequest request) {
         String topic = resolveTopic(request);
-
         ProducerRecord<String, Object> record = buildRecord(topic, request);
 
         log.debug("[KAFKA] Sending async | topic={} key={}", topic, request.getKey());
-        return kafkaTemplate.send(record);
+
+        return kafkaTemplate.send(record).toCompletableFuture();
     }
 
-    // Helpers
     private ProducerRecord<String, Object> buildRecord(String topic, MessageRequest request) {
-        ProducerRecord<String, Object> record = new ProducerRecord<>(topic, request.getKey(), request.getPayload());
+        ProducerRecord<String, Object> record =
+                new ProducerRecord<>(topic, request.getKey(), request.getPayload());
 
         String correlationId = UUID.randomUUID().toString();
         record.headers().add("correlationId", correlationId.getBytes(StandardCharsets.UTF_8));
         record.headers().add("source", "kafka-producer".getBytes(StandardCharsets.UTF_8));
+
         return record;
     }
 
     private String resolveTopic(MessageRequest request) {
-        return (request.getTopic() != null && !request.getTopic().isBlank()) ? request.getTopic() : defaultTopic;
+        return (request.getTopic() != null && !request.getTopic().isBlank())
+                ? request.getTopic()
+                : properties.getTopic().getName();
     }
 }

@@ -75,44 +75,40 @@ services:
   # ───────────────────────────────────────────
   # Producer app
   # ───────────────────────────────────────────
-#  kafka-producer:
-#    build:
-#      context: ../kafka-producer
-#      dockerfile: Dockerfile
-#    container_name: kafka-producer
-#    ports:
-#      - "${PRODUCER_PORT}:8080"
-#    environment:
-#      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-#      KAFKA_TOPIC_NAME: my-topic
-#      SPRING_PROFILES_ACTIVE: docker
-#    depends_on:
-#      kafka:
-#        condition: service_healthy
-#    networks:
-#      - kafka-net
-#    restart: unless-stopped
+  kafka-producer:
+    image: dev.perfectbogus/kafka-producer:0.0.1
+    container_name: kafka-producer
+    ports:
+      - "${PRODUCER_PORT}:8080"
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_TOPIC_NAME: my-topic
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - kafka-net
+    restart: unless-stopped
 
   # ───────────────────────────────────────────
   # Consumer app
   # ───────────────────────────────────────────
-#  kafka-consumer:
-#    build:
-#      context: ../kafka-consumer
-#      dockerfile: Dockerfile
-#    container_name: kafka-consumer
-#    ports:
-#      - "${CONSUMER_PORT}:8080"
-#    environment:
-#      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-#      KAFKA_TOPIC_NAME: my-topic
-#      SPRING_PROFILES_ACTIVE: docker
-#    depends_on:
-#      kafka:
-#        condition: service_healthy
-#    networks:
-#      - kafka-net
-#    restart: unless-stopped
+  kafka-consumer:
+    image: dev.perfectbogus/kafka-consumer:0.0.1
+    container_name: kafka-consumer
+    ports:
+      - "${CONSUMER_PORT}:8080"
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_TOPIC_NAME: my-topic
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - kafka-net
+    restart: unless-stopped
 
 # ─────────────────────────────────────────────────────────────────
 # Volumes & Networks

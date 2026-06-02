@@ -1,6 +1,7 @@
 package dev.perfectbogus.kafkaconsumer.config;
 
 import dev.perfectbogus.api.event.UserEvent;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -26,27 +27,23 @@ import java.util.Map;
 @Slf4j
 @Configuration
 @EnableKafka
+@RequiredArgsConstructor
 public class KafkaConsumerConfig {
 
-    @Value("${spring.kafka.bootstrap-servers}")
-    private String bootstrapServer;
-
-    @Value("${spring.kafka.consumer.group-id}")
-    private String groupId;
+    // ✅ Everything from YAML, nothing hardcoded
+    private final ConsumerProperties properties;
 
     @Bean
     public ConsumerFactory<String, UserEvent> consumerFactory() {
         Map<String, Object> config = new HashMap<>();
 
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-        config.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getConsumer().getBootstrapServers());
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, properties.getConsumer().getGroupId());
+        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, properties.getConsumer().getAutoOffsetReset());
+        config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, properties.getConsumer().getEnableAutoCommit());
+        config.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, properties.getConsumer().getMaxPollRecords());
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-
-        // Trust our shared event classes from kafka-api
         config.put(JsonDeserializer.TRUSTED_PACKAGES, "dev.perfectbogus.api.event");
         config.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
         config.put(JsonDeserializer.VALUE_DEFAULT_TYPE, UserEvent.class.getName());
@@ -64,24 +61,28 @@ public class KafkaConsumerConfig {
                 new ConcurrentKafkaListenerContainerFactory<>();
 
         factory.setConsumerFactory(consumerFactory());
-        factory.setConcurrency(3);
+        factory.setConcurrency(properties.getConsumer().getConcurrency());
         factory.getContainerProperties().setAckMode(
                 ContainerProperties.AckMode.MANUAL_IMMEDIATE
         );
-
         factory.setCommonErrorHandler(errorHandler());
 
         return factory;
     }
 
     @Bean
-    public CommonErrorHandler errorHandler() {
-        ExponentialBackOffWithMaxRetries backOff = new ExponentialBackOffWithMaxRetries(3);
-        backOff.setInitialInterval(1_000L);
-        backOff.setMultiplier(2.0);
-        backOff.setMaxInterval(10_000L);
+    public DefaultErrorHandler errorHandler() {
+        ConsumerProperties.Backoff backoff = properties.getConsumer().getBackoff();
 
-        DefaultErrorHandler errorHandler = new DefaultErrorHandler(deadLetterPublishingRecoverer(), backOff);
+        ExponentialBackOffWithMaxRetries exponentialBackOff =
+                new ExponentialBackOffWithMaxRetries(backoff.getMaxRetries());
+        exponentialBackOff.setInitialInterval(backoff.getInitialInterval());
+        exponentialBackOff.setMultiplier(backoff.getMultiplier());
+        exponentialBackOff.setMaxInterval(backoff.getMaxInterval());
+
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler(
+                deadLetterPublishingRecoverer(), exponentialBackOff
+        );
 
         errorHandler.addNotRetryableExceptions(
                 JsonParseException.class,
@@ -92,22 +93,25 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConsumerRecordRecoverer deadLetterPublishingRecoverer() {
+    public DeadLetterPublishingRecoverer deadLetterPublishingRecoverer() {
         return new DeadLetterPublishingRecoverer(kafkaTemplate(),
                 (record, ex) -> {
-                    log.error("[KAFKA-DLT] Sending to dead letter topic | topic={} key={} error={}",
+                    log.error("[KAFKA-DLT] Sending to DLT | topic={} key={} error={}",
                             record.topic(), record.key(), ex.getMessage());
-                    return new TopicPartition(record.topic() + ".DLT", record.partition());
+                    return new TopicPartition(
+                            record.topic() + properties.getTopic().getDltSuffix(),
+                            record.partition()
+                    );
                 });
     }
 
     @Bean
     public KafkaTemplate<String, Object> kafkaTemplate() {
         Map<String, Object> config = new HashMap<>();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                properties.getConsumer().getBootstrapServers());
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(config));
     }
-
 }
