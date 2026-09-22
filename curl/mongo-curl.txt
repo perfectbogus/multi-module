@@ -1,0 +1,9 @@
+curl -X POST http://localhost:8080/api/tasks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Setup Docker Mongo",
+    "description": "Run MongoDB container with GLIBC_TUNABLES env var",
+    "status": "COMPLETED",
+    "tags": ["docker", "mongodb", "java"]
+  }'
+
