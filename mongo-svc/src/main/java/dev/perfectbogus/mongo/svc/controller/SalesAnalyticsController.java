@@ -56,4 +56,9 @@ public class SalesAnalyticsController {
         return analyticsSvc.getUnwoundItems();
     }
 
+    @GetMapping("/category-units")
+    public List<CategoryUnitsDto> getCategoryUnits() {
+        return analyticsSvc.getUnitsSoldByCategory();
+    }
+
 }

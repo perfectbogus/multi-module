@@ -78,4 +78,12 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(unwind, projection);
         return mongoTemplate.aggregate(agg, COLLECTION, ItemProjectionDto.class).getMappedResults();
     }
+
+    public List<CategoryUnitsDto> getUnitsSoldByCategory() {
+        UnwindOperation unwind = unwind("items");
+        GroupOperation group = group("items.category")
+                .sum("items.qty").as("totalUnitsSold");
+        Aggregation agg = newAggregation(unwind, group);
+        return mongoTemplate.aggregate(agg, COLLECTION, CategoryUnitsDto.class).getMappedResults();
+    }
 }
