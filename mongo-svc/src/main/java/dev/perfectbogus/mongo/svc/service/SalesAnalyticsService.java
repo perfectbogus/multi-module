@@ -67,4 +67,15 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(group);
         return mongoTemplate.aggregate(agg, COLLECTION, CityRevenueDto.class).getUniqueMappedResult();
     }
+
+    public List<ItemProjectionDto> getUnwoundItems() {
+        UnwindOperation unwind = unwind("items");
+        ProjectionOperation projection = project()
+                .and("orderId").as("orderId")
+                .and("items.name").as("itemName")
+                .and("items.price").as("itemPrice")
+                .andExclude("_id");
+        Aggregation agg = newAggregation(unwind, projection);
+        return mongoTemplate.aggregate(agg, COLLECTION, ItemProjectionDto.class).getMappedResults();
+    }
 }

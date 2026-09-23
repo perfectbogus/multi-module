@@ -51,6 +51,9 @@ public class SalesAnalyticsController {
         return analyticsSvc.getCityRevenue();
     }
 
-
+    @GetMapping("/unwound-items")
+    public List<ItemProjectionDto> getUnwoundItems() {
+        return analyticsSvc.getUnwoundItems();
+    }
 
 }
