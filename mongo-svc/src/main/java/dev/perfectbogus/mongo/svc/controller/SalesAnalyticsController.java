@@ -1,8 +1,6 @@
 package dev.perfectbogus.mongo.svc.controller;
 
-import dev.perfectbogus.mongo.svc.dto.order.GroupCountDto;
-import dev.perfectbogus.mongo.svc.dto.order.ProjectedOrderDto;
-import dev.perfectbogus.mongo.svc.dto.order.SimpleCountDto;
+import dev.perfectbogus.mongo.svc.dto.order.*;
 import dev.perfectbogus.mongo.svc.entity.Order;
 import dev.perfectbogus.mongo.svc.service.SalesAnalyticsService;
 import lombok.AllArgsConstructor;
@@ -42,5 +40,17 @@ public class SalesAnalyticsController {
     public List<GroupCountDto> getStatusCounts() {
         return analyticsSvc.getStatusCounts();
     }
+
+    @GetMapping("/delivered-stats")
+    public RevenueStatsDto getDeliveredStats() {
+        return analyticsSvc.getDeliveredStats();
+    }
+
+    @GetMapping("/city-revenue")
+    public CityRevenueDto getCityRevenue(){
+        return analyticsSvc.getCityRevenue();
+    }
+
+
 
 }

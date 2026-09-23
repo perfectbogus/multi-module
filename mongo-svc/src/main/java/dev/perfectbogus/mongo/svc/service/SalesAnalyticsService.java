@@ -1,8 +1,6 @@
 package dev.perfectbogus.mongo.svc.service;
 
-import dev.perfectbogus.mongo.svc.dto.order.GroupCountDto;
-import dev.perfectbogus.mongo.svc.dto.order.ProjectedOrderDto;
-import dev.perfectbogus.mongo.svc.dto.order.SimpleCountDto;
+import dev.perfectbogus.mongo.svc.dto.order.*;
 import dev.perfectbogus.mongo.svc.entity.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -52,5 +50,21 @@ public class SalesAnalyticsService {
         GroupOperation group = group("status").count().as("totalOrders");
         Aggregation agg  = newAggregation(group);
         return mongoTemplate.aggregate(agg, COLLECTION, GroupCountDto.class).getMappedResults();
+    }
+
+    public RevenueStatsDto getDeliveredStats() {
+        MatchOperation match = match(Criteria.where("status").is("DELIVERED"));
+        GroupOperation group = group()
+                .sum("totalAmount").as("totalRevenue")
+                .avg("totalAmount").as("averageOrderValue");
+        Aggregation agg = newAggregation(match, group);
+        return mongoTemplate.aggregate(agg, COLLECTION, RevenueStatsDto.class).getUniqueMappedResult();
+    }
+
+    public CityRevenueDto getCityRevenue() {
+        GroupOperation group = group("customer.city")
+                .sum("totalAmount").as("cityRevenue");
+        Aggregation agg = newAggregation(group);
+        return mongoTemplate.aggregate(agg, COLLECTION, CityRevenueDto.class).getUniqueMappedResult();
     }
 }
