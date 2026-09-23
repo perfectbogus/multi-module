@@ -5,6 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.time.Instant;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -13,5 +17,31 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Order {
     @Id
     private String id;
+    private String orderId;
+    private Customer customer;
+    private String status;
+    private String paymentMethod;
+    private List<Item> items;
+    private Double totalAmount;
+    private Instant orderDate;
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Customer {
+        private String name;
+        private String city;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Item {
+        private String name;
+        private String category;
+        private Double price;
+
+        @Field("qty")
+        private Integer quantity;
+    }
 }

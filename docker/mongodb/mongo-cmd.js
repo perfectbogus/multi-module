@@ -198,9 +198,58 @@ db.orders.aggregate([
 	}
 ]);
 
+// Grouping by Nested Fields
+db.orders.aggregate([
+	{
+		$group: {
+			_id: "$customer.city",
+			cityRevenue: { $sum: "$totalRevenue" }
+		}
+	}
+])
 
+// Unwinding Arrays ($unwind)
+db.orders.aggregate([
+	{ $unwind: "$items"},
+	{
+		$project: {
+			_id: 0,
+			orderId: 1,
+			itemName: "$items.name",
+			itemPrice: "$items.price"
+		}
+	}
+]);
 
+// Grouping unwound data
+db.orders.aggregate([
+	{ $unwind: "$items"},
+	{
+		$group: {
+			_id: "$items.category",
+			totalUnitSold: { $sum: "$items.qty"}
+		}
+	}
+]);
 
+// Combining Stage ($match + $unwind + $group + $sort)
+db.orders.aggregate([
+	// filter
+	{ $match: { status: "DELIVERED"}},
+
+	// Unwind items array
+	{ $unwind: "$items"},
+
+	// Group by item name and compute revenue (price * qty)
+	{
+		$group : {
+			_id: "$items.name",
+			itemRevenue: { $sum: { $multiply: ["$items.price", "$items.qty"]}}
+		}
+	},
+
+	{ $sort: { itemRevenue: -1 }}
+]);
 
 
 
