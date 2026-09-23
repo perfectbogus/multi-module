@@ -1,5 +1,6 @@
 package dev.perfectbogus.mongo.svc.controller;
 
+import dev.perfectbogus.mongo.svc.dto.order.GroupCountDto;
 import dev.perfectbogus.mongo.svc.dto.order.ProjectedOrderDto;
 import dev.perfectbogus.mongo.svc.dto.order.SimpleCountDto;
 import dev.perfectbogus.mongo.svc.entity.Order;
@@ -35,6 +36,11 @@ public class SalesAnalyticsController {
     @GetMapping("/credit-card-count")
     public SimpleCountDto getCreditCardCount() {
         return analyticsSvc.getCreditCardOrdersCount();
+    }
+
+    @GetMapping("/status-counts")
+    public List<GroupCountDto> getStatusCounts() {
+        return analyticsSvc.getStatusCounts();
     }
 
 }

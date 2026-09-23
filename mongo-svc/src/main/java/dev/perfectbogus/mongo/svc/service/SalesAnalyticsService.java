@@ -1,5 +1,6 @@
 package dev.perfectbogus.mongo.svc.service;
 
+import dev.perfectbogus.mongo.svc.dto.order.GroupCountDto;
 import dev.perfectbogus.mongo.svc.dto.order.ProjectedOrderDto;
 import dev.perfectbogus.mongo.svc.dto.order.SimpleCountDto;
 import dev.perfectbogus.mongo.svc.entity.Order;
@@ -44,5 +45,12 @@ public class SalesAnalyticsService {
         CountOperation count = count().as("creditCardOrdersCount");
         Aggregation agg = newAggregation(match, count);
         return mongoTemplate.aggregate(agg, COLLECTION, SimpleCountDto.class).getUniqueMappedResult();
+    }
+
+
+    public List<GroupCountDto> getStatusCounts() {
+        GroupOperation group = group("status").count().as("totalOrders");
+        Aggregation agg  = newAggregation(group);
+        return mongoTemplate.aggregate(agg, COLLECTION, GroupCountDto.class).getMappedResults();
     }
 }
