@@ -96,4 +96,9 @@ public class SalesAnalyticsController {
         return analyticsSvc.getOrdersProjected();
     }
 
+    @GetMapping("/orders-projected-renamed")
+    public List<ProjectionRenameDto> getOrdersProjectedRenamed() {
+        return analyticsSvc.getOrdersProjectedRenamed();
+    }
+
 }

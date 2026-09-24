@@ -138,4 +138,10 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(projection);
         return mongoTemplate.aggregate(agg, COLLECTION, OrderProjectionDto.class).getMappedResults();
     }
+
+    public List<ProjectionRenameDto> getOrdersProjectedRenamed() {
+        ProjectionOperation project = project("orderId").and("totalAmount").as("orderTotal").andExclude("_id");
+        Aggregation agg = newAggregation(project);
+        return mongoTemplate.aggregate(agg, COLLECTION, ProjectionRenameDto.class).getMappedResults();
+    }
 }
