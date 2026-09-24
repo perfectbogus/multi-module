@@ -101,4 +101,9 @@ public class SalesAnalyticsController {
         return analyticsSvc.getOrdersProjectedRenamed();
     }
 
+    @GetMapping("/orders-projected-customer")
+    public List<OrderProjectionCustomerDto> getOrdersProjectedCustomer() {
+        return analyticsSvc.getOrdersProjectedCustomer();
+    }
+
 }

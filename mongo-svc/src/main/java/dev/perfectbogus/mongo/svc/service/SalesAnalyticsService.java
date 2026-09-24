@@ -144,4 +144,11 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(project);
         return mongoTemplate.aggregate(agg, COLLECTION, ProjectionRenameDto.class).getMappedResults();
     }
+
+    public List<OrderProjectionCustomerDto> getOrdersProjectedCustomer() {
+        ProjectionOperation project = project("orderId").and("customer.name").as("customerName")
+                .and("customer.city").as("customerCity").andExclude("_id");
+        Aggregation agg = newAggregation(project);
+        return mongoTemplate.aggregate(agg, COLLECTION, OrderProjectionCustomerDto.class).getMappedResults();
+    }
 }
