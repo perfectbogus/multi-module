@@ -81,4 +81,9 @@ public class SalesAnalyticsController {
         return analyticsSvc.getOrdersDeliveredByCity();
     }
 
+    @GetMapping("/orders-by-client-name")
+    public List<Order> getOrdersByClientName() {
+        return analyticsSvc.getOrdersByClientName();
+    }
+
 }

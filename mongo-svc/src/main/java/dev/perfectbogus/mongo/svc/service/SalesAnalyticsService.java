@@ -120,4 +120,10 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(match);
         return mongoTemplate.aggregate(agg, COLLECTION, Order.class).getMappedResults();
     }
+
+    public List<Order> getOrdersByClientName() {
+        MatchOperation match = match(Criteria.where("customer.name").is("Ana"));
+        Aggregation agg = newAggregation(match);
+        return mongoTemplate.aggregate(agg, COLLECTION, Order.class).getMappedResults();
+    }
 }
