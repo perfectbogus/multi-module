@@ -126,4 +126,10 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(match);
         return mongoTemplate.aggregate(agg, COLLECTION, Order.class).getMappedResults();
     }
+
+    public List<Order> getOrdersByOneCategory() {
+        MatchOperation match = match(Criteria.where("items.category").is("Audio"));
+        Aggregation agg = newAggregation(match);
+        return mongoTemplate.aggregate(agg, COLLECTION, Order.class).getMappedResults();
+    }
 }

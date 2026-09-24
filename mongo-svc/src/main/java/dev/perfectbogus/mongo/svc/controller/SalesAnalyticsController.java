@@ -86,4 +86,9 @@ public class SalesAnalyticsController {
         return analyticsSvc.getOrdersByClientName();
     }
 
+    @GetMapping("/orders-by-audio-category")
+    public List<Order> getOrdersByCategoryAudio() {
+        return analyticsSvc.getOrdersByOneCategory();
+    }
+
 }
