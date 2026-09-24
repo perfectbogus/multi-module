@@ -252,19 +252,80 @@ db.orders.aggregate([
 ]);
 
 
+db.orders.aggregate([
+	{ $match: { status: "DELIVERED" }},
+
+	{ $unwind: "$items"},
+
+	{
+		$group: {
+			_id: "$items.name",
+			itemRevenue: { $sum: { $multiply: ["$items.price", "$items.qty"]}}
+		}
+	},
+
+	{ $sort: { itemReveue: -1}}
+]);
+
+
+&6E59GBcq~m&)$V
 
 
 
 
+Challenge 1: Exact Match on String Field
+Goal: Retrieve all orders where the paymentMethod is explicitly "PAYPAL".
+
+// Get Orders paid by paypal
+db.orders.aggregate([
+	{ $match: { paymentMethod: "PAYPAL"}}
+]);
+
+Challenge 2: Greater Than Comparison ($gt)
+Goal: Find all orders where the totalAmount is strictly greater than 100.
+
+db.orders.aggregate([
+	{ $match : { totalAmount: { $gt: 100 }}}
+]);
+
+Challenge 3: Combined Conditions with AND ($and / implicit AND)
+Goal: Find all orders that have a status of "DELIVERED" and were placed by a customer from the city of "Guadalajara".
+
+db.orders.aggregate([
+	{ 
+		$match: { 
+			status: "DELIVERED",
+			"customer.city": "Guadalajara" 
+		} 
+	}
+]);
+
+Challenge 4: Matching Inside Nested Documents
+Goal: Query the embedded document to return all orders placed by a customer whose name is "Ana".
+
+db.orders.aggregate([
+	{ $match: { "customer.name": "Ana"}}
+]);
+
+Challenge 5: Matching Elements Inside an Array of Objects
+Goal: Retrieve all orders that contain at least one item belonging to the "Audio" category inside the items array.
+
+db.orders.aggregate([
+	{ $match: { "items.category": "Audio"}}
+]);
 
 
+Challenge 1: Basic Field Selection & Exclusion
+Goal: Return all documents, but project only the orderId, status, and totalAmount fields. Exclude the default _id field.
 
+Challenge 2: Renaming Fields
+Goal: Return all documents, including only orderId and totalAmount, but rename totalAmount to orderTotal in the resulting output. (Exclude _id).
 
+Challenge 3: Projecting Embedded Document Fields
+Goal: Flatten the output by projecting orderId, the customer's name as customerName, and the customer's city as city. (Exclude _id).
 
+Challenge 4: Simple Arithmetic Computation
+Goal: Project orderId and create a new field called discountedTotal that calculates a 10% discount on totalAmount (multiply totalAmount by 0.9). (Exclude _id).
 
-
-
-
-
-
-
+Challenge 5: Array Length Expression
+Goal: Project orderId and a new field called totalItems that calculates the total number of items in the items array using array size operators. (Exclude _id).
