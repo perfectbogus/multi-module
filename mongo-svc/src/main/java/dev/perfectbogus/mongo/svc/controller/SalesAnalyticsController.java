@@ -66,4 +66,19 @@ public class SalesAnalyticsController {
         return analyticsSvc.getItemRevenueForDelivered();
     }
 
+    @GetMapping("/orders-paypal")
+    public List<Order> getOrdersPaidPaypal() {
+        return analyticsSvc.getOrdersPaidByPaypal();
+    }
+
+    @GetMapping("/total-amount-gt")
+    public List<Order> getOrdersTotalAmount() {
+        return analyticsSvc.getOrdersTotalAmount();
+    }
+
+    @GetMapping("/order-by-city-gdl")
+    public List<Order> getOrdersByCityGdl() {
+        return analyticsSvc.getOrdersDeliveredByCity();
+    }
+
 }

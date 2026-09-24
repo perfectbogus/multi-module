@@ -100,4 +100,24 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(match, unwind, group, sort);
         return mongoTemplate.aggregate(agg, COLLECTION, ItemRevenueDto.class).getMappedResults();
     }
+
+    public List<Order> getOrdersPaidByPaypal() {
+        MatchOperation match = match(Criteria.where("paymentMethod").is("PAYPAL"));
+        Aggregation agg = newAggregation(match);
+        return mongoTemplate.aggregate(agg, COLLECTION, Order.class).getMappedResults();
+    }
+
+    public List<Order> getOrdersTotalAmount() {
+        MatchOperation match = match(Criteria.where("totalAmount").gt(100));
+        Aggregation agg = newAggregation(match);
+        return mongoTemplate.aggregate(agg, COLLECTION, Order.class).getMappedResults();
+    }
+
+    public List<Order> getOrdersDeliveredByCity() {
+        MatchOperation match = match(
+                Criteria.where("status").is("DELIVERED")
+                        .and("customer.city").is("Guadalajara"));
+        Aggregation agg = newAggregation(match);
+        return mongoTemplate.aggregate(agg, COLLECTION, Order.class).getMappedResults();
+    }
 }
