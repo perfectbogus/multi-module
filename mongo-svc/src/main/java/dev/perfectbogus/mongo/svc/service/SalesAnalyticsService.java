@@ -151,4 +151,12 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(project);
         return mongoTemplate.aggregate(agg, COLLECTION, OrderProjectionCustomerDto.class).getMappedResults();
     }
+
+    public List<OrderProjectedOperationDto> getOrdersProjectedOperation() {
+        ProjectionOperation project = project("orderId")
+                .and(ArithmeticOperators.valueOf("totalAmount").multiplyBy(0.90)).as("discountedTotal")
+                .andExclude("_id");
+        Aggregation agg = newAggregation(project);
+        return mongoTemplate.aggregate(agg, COLLECTION, OrderProjectedOperationDto.class).getMappedResults();
+    }
 }

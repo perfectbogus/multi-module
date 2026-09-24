@@ -318,11 +318,44 @@ db.orders.aggregate([
 Challenge 1: Basic Field Selection & Exclusion
 Goal: Return all documents, but project only the orderId, status, and totalAmount fields. Exclude the default _id field.
 
+db.orders.aggregate([
+	{ 
+		$project: {
+			_id: 0,
+			orderId: 1,
+			status: 1,
+			totalAmount: 1
+		}
+	}
+])
+
 Challenge 2: Renaming Fields
 Goal: Return all documents, including only orderId and totalAmount, but rename totalAmount to orderTotal in the resulting output. (Exclude _id).
 
+db.orders.aggregate([
+	{
+		$project: {
+			_id: 0,
+			orderId: 1,
+			orderTotal: "$totalAmount"
+		}
+	}
+]);
+
+
 Challenge 3: Projecting Embedded Document Fields
 Goal: Flatten the output by projecting orderId, the customer's name as customerName, and the customer's city as city. (Exclude _id).
+
+db.orders.aggregate([
+	{
+		$project: {
+			_id: 0,
+			orderId: 1,
+			customerName: "$customer.name",
+			customerCity: "$customer.city"
+		}
+	}
+]);
 
 Challenge 4: Simple Arithmetic Computation
 Goal: Project orderId and create a new field called discountedTotal that calculates a 10% discount on totalAmount (multiply totalAmount by 0.9). (Exclude _id).
