@@ -61,4 +61,9 @@ public class SalesAnalyticsController {
         return analyticsSvc.getUnitsSoldByCategory();
     }
 
+    @GetMapping("/item-revenue")
+    public List<ItemRevenueDto> getItemRevenue() {
+        return analyticsSvc.getItemRevenueForDelivered();
+    }
+
 }

@@ -86,4 +86,18 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(unwind, group);
         return mongoTemplate.aggregate(agg, COLLECTION, CategoryUnitsDto.class).getMappedResults();
     }
+
+    public List<ItemRevenueDto> getItemRevenueForDelivered() {
+        MatchOperation match = match(Criteria.where("status").is("DELIVERED"));
+        UnwindOperation unwind = unwind("items");
+        GroupOperation group = group("items.name")
+                .sum(ArithmeticOperators.valueOf("items.price")
+                        .multiplyBy("items.qty"))
+                .as("itemRevenue");
+
+        SortOperation sort = sort(Sort.Direction.DESC, "itemRevenue");
+
+        Aggregation agg = newAggregation(match, unwind, group, sort);
+        return mongoTemplate.aggregate(agg, COLLECTION, ItemRevenueDto.class).getMappedResults();
+    }
 }
