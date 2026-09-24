@@ -111,4 +111,9 @@ public class SalesAnalyticsController {
         return analyticsSvc.getOrdersProjectedOperation();
     }
 
+    @GetMapping("/order-projected-n-items")
+    public List<OrderProjectNItems> getOrderProjectedNItems() {
+        return analyticsSvc.getOrdersProjectedNItems();
+    }
+
 }
