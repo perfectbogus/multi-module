@@ -172,4 +172,18 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(group);
         return mongoTemplate.aggregate(agg, COLLECTION, CountDocsPerGroupDto.class).getMappedResults();
     }
+
+    public List<SummingPaymentMethodDto> getSummingByPaymentMethod() {
+        GroupOperation group = group("paymentMethod")
+                .sum("totalAmount").as("grandTotal");
+        Aggregation agg = newAggregation(group);
+        return mongoTemplate.aggregate(agg, COLLECTION, SummingPaymentMethodDto.class).getMappedResults();
+    }
+
+    public List<AvgCalculationDto> getAvgPerCity() {
+        GroupOperation group = group("customer.city")
+                .avg("totalAmount").as("avgOrderValue");
+        Aggregation agg = newAggregation(group);
+        return mongoTemplate.aggregate(agg, COLLECTION, AvgCalculationDto.class).getMappedResults();
+    }
 }

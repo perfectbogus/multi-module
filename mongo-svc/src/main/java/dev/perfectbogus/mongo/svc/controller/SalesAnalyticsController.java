@@ -121,4 +121,14 @@ public class SalesAnalyticsController {
         return analyticsSvc.getCountDocsPerGroup();
     }
 
+    @GetMapping("/summing-by-payment-method")
+    public List<SummingPaymentMethodDto> getSummingByPaymentMethod() {
+        return analyticsSvc.getSummingByPaymentMethod();
+    }
+
+    @GetMapping("/avg-per-city")
+    public List<AvgCalculationDto> getAvgPerCity() {
+        return analyticsSvc.getAvgPerCity();
+    }
+
 }
