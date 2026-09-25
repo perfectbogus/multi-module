@@ -360,5 +360,82 @@ db.orders.aggregate([
 Challenge 4: Simple Arithmetic Computation
 Goal: Project orderId and create a new field called discountedTotal that calculates a 10% discount on totalAmount (multiply totalAmount by 0.9). (Exclude _id).
 
+db.orders.aggregate([
+	{
+		$project: {
+			_id: 0,
+			orderId: 1,
+			discountedTotal: { $multiply: [ "$totalAmount", 0.90 ]} 
+		}
+	}
+]);
+
 Challenge 5: Array Length Expression
 Goal: Project orderId and a new field called totalItems that calculates the total number of items in the items array using array size operators. (Exclude _id).
+
+
+db.orders.aggregate([
+	{
+		$project: {
+			_id: 0,
+			orderId: 1,
+			totalItems: { $size: "$items"}
+		}
+	}
+]);
+
+
+Challenge 1: Count Documents per Group
+Goal: Group all orders by their status and calculate the total count of orders for each status. Name the count field totalOrders.
+
+db.orders.aggregate([
+	{
+		$group: {
+			_id: "$status",
+			totalOrders: { $sum: 1 }
+		}
+	}
+]);
+
+Challenge 2: Summing Numeric Values
+Goal: Group orders by paymentMethod and calculate the sum of totalAmount for each payment method. Name the accumulated total field grandTotal.
+
+Challenge 3: Average Calculation
+Goal: Group orders by the customer's city (customer.city) and calculate the average totalAmount spent per city. Name the result field avgOrderValue.
+
+Challenge 4: Finding Max and Min Values
+Goal: Group orders by status and find both the highest (maxTotal) and lowest (minTotal) totalAmount for each status within a single grouping stage.
+
+Challenge 5: Global Aggregation (Single Bucket)
+Goal: Calculate the total overall revenue across all orders in the database by grouping with a null ID (_id: null). Name the output total overallRevenue.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

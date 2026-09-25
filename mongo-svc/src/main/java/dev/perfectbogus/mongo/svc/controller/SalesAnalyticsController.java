@@ -116,4 +116,9 @@ public class SalesAnalyticsController {
         return analyticsSvc.getOrdersProjectedNItems();
     }
 
+    @GetMapping("/count-documents-per-group")
+    public List<CountDocsPerGroupDto> getCountDocsPerGroup() {
+        return analyticsSvc.getCountDocsPerGroup();
+    }
+
 }

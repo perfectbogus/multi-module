@@ -166,4 +166,10 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(project);
         return mongoTemplate.aggregate(agg, COLLECTION, OrderProjectNItems.class).getMappedResults();
     }
+
+    public List<CountDocsPerGroupDto> getCountDocsPerGroup() {
+        GroupOperation group = group("status").count().as("totalOrders");
+        Aggregation agg = newAggregation(group);
+        return mongoTemplate.aggregate(agg, COLLECTION, CountDocsPerGroupDto.class).getMappedResults();
+    }
 }
