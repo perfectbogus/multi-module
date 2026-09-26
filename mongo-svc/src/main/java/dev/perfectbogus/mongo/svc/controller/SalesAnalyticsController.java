@@ -4,9 +4,7 @@ import dev.perfectbogus.mongo.svc.dto.order.*;
 import dev.perfectbogus.mongo.svc.entity.Order;
 import dev.perfectbogus.mongo.svc.service.SalesAnalyticsService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -131,4 +129,23 @@ public class SalesAnalyticsController {
         return analyticsSvc.getAvgPerCity();
     }
 
+    @GetMapping("/group-stats")
+    public List<GroupStatsDto> getGroupStats() {
+        return analyticsSvc.getGroupStats();
+    }
+
+    @GetMapping("/get-overall-revenue")
+    public OverallRevenueDto getOverallRevenue() {
+        return analyticsSvc.getOverallRevenue();
+    }
+
+    @GetMapping("/item-details-per-order")
+    public List<ItemUnwoundDto> getItemDetailsPerOrder() {
+        return analyticsSvc.getItemDetailsPerOrder();
+    }
+
+    @GetMapping("/items-details/{category}")
+    public List<ItemUnwoundDto> getItemUnwoundPerCategory(@PathVariable String category) {
+        return analyticsSvc.getDetailsPerCategory(category);
+    }
 }

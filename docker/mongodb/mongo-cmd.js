@@ -400,18 +400,73 @@ db.orders.aggregate([
 Challenge 2: Summing Numeric Values
 Goal: Group orders by paymentMethod and calculate the sum of totalAmount for each payment method. Name the accumulated total field grandTotal.
 
+db.orders.aggregate([
+{
+	$group: {
+		_id: "$paymentMethod",
+		grandTotal: { $sum: "$totalAmount"}
+	}
+}
+]);
+
 Challenge 3: Average Calculation
 Goal: Group orders by the customer's city (customer.city) and calculate the average totalAmount spent per city. Name the result field avgOrderValue.
+
+db.orders.aggregate([
+{
+	$group: {
+		_id: "$customer.city",
+		avgOrderValue: { $avg: "$totalAmount" }
+	}
+}
+]);
 
 Challenge 4: Finding Max and Min Values
 Goal: Group orders by status and find both the highest (maxTotal) and lowest (minTotal) totalAmount for each status within a single grouping stage.
 
+db.orders.aggregate([{
+	$group: {
+		_id: "$status",
+		maxTotal: { $max: "$totalAmount" },
+		minTotal: { $min: "$totalAmount" }
+	}
+}]);
+
 Challenge 5: Global Aggregation (Single Bucket)
-Goal: Calculate the total overall revenue across all orders in the database by grouping with a null ID (_id: null). Name the output total overallRevenue.
+Goal: Calculate the total overall revenue across all orders in the database by grouping with a null ID (_id: null). 
+Name the output total overallRevenue.
+
+db.orders.aggregate([{
+	$group: {
+		_id: null,
+		overallRevenue: { $sum: "$totalAmount" }
+	}
+}]);
 
 
+Challenge 1: Basic Array Unwinding
+Goal: Deconstruct the items array in the orders collection so that each item in an order becomes its own separate document. 
+Output the unwound documents.
 
+db.orders.aggregate([{
+	
+}])
 
+Challenge 2: $unwind + $match
+Goal: Unwind the items array, then filter the resulting documents to return only individual items where items.category is equal 
+to "Electronics".
+
+Challenge 3: $unwind + $group (Aggregation per Array Item)
+Goal: Unwind the items array, then group by the item's name (items.name) to calculate the total quantity sold for each distinct 
+product. Name the total field totalQuantitySold.
+
+Challenge 4: $unwind + Arithmetic Calculation
+Goal: Unwind the items array and project each item's name (itemName), quantity (qty), unit price (price), and calculate a new 
+computed field itemSubtotal (items.qty * items.price). Exclude _id.
+
+Challenge 5: Preserving Null / Empty Arrays
+Goal: Unwind the items array, but ensure that any order that has an empty items array or null items field is not dropped from 
+the results (include array index / preserve null and empty arrays).
 
 
 

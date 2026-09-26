@@ -186,4 +186,43 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(group);
         return mongoTemplate.aggregate(agg, COLLECTION, AvgCalculationDto.class).getMappedResults();
     }
+
+    public List<GroupStatsDto> getGroupStats() {
+        GroupOperation group = group("status")
+                .min("totalAmount").as("minTotal")
+                .max("totalAmount").as("maxTotal");
+        Aggregation agg = newAggregation(group);
+        return mongoTemplate.aggregate(agg, COLLECTION, GroupStatsDto.class).getMappedResults();
+    }
+
+    public OverallRevenueDto getOverallRevenue() {
+        GroupOperation group = group()
+                .sum("totalAmount").as("overallRevenue");
+        Aggregation agg = newAggregation(group);
+        return mongoTemplate.aggregate(agg, COLLECTION, OverallRevenueDto.class).getUniqueMappedResult();
+    }
+
+    public List<ItemUnwoundDto> getItemDetailsPerOrder() {
+        UnwindOperation unwind = unwind("items");
+        ProjectionOperation project = project("orderId")
+                .and("items.name").as("itemName")
+                .and("items.category").as("itemCategory")
+                .and("items.price").as("itemPrice")
+                .and("items.qty").as("itemQty");
+        Aggregation agg = newAggregation(unwind, project);
+        return mongoTemplate.aggregate(agg, COLLECTION, ItemUnwoundDto.class).getMappedResults();
+    }
+
+
+    public List<ItemUnwoundDto> getDetailsPerCategory(String category) {
+        UnwindOperation unwind = unwind("items");
+        MatchOperation match = match(Criteria.where("items.category").is(category));
+        ProjectionOperation project = project("orderId")
+                .and("items.name").as("itemName")
+                .and("items.category").as("itemCategory")
+                .and("items.price").as("itemPrice")
+                .and("items.qty").as("itemQty");
+        Aggregation agg = newAggregation(unwind, match, project);
+        return mongoTemplate.aggregate(agg, COLLECTION, ItemUnwoundDto.class).getMappedResults();
+    }
 }
