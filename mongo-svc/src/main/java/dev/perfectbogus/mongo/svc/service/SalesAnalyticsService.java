@@ -246,5 +246,11 @@ public class SalesAnalyticsService {
         return mongoTemplate.aggregate(agg, COLLECTION, ItemSubTotalDto.class).getMappedResults();
     }
 
+    public List<UnwoundOrderDto> getEmptyItems() {
+        UnwindOperation unwind = unwind("items", true);
+        Aggregation agg = newAggregation(unwind);
+        return mongoTemplate.aggregate(agg, COLLECTION, UnwoundOrderDto.class).getMappedResults();
+    }
+
 
 }

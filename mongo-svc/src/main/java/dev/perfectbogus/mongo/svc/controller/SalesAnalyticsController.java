@@ -158,4 +158,9 @@ public class SalesAnalyticsController {
     public List<ItemSubTotalDto> getItemsSubtotal() {
         return analyticsSvc.getItemSubTotal();
     }
+
+    @GetMapping("/orders-with-items-empty")
+    public List<UnwoundOrderDto> getOrderItemsEmpty() {
+        return analyticsSvc.getEmptyItems();
+    }
 }
