@@ -153,4 +153,9 @@ public class SalesAnalyticsController {
     public List<TotalQtySoldDto> getTotalQtySold() {
         return analyticsSvc.getTotalQtySold();
     }
+
+    @GetMapping("/items-subtotal")
+    public List<ItemSubTotalDto> getItemsSubtotal() {
+        return analyticsSvc.getItemSubTotal();
+    }
 }

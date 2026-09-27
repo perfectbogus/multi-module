@@ -232,5 +232,19 @@ public class SalesAnalyticsService {
         return mongoTemplate.aggregate(agg, COLLECTION, TotalQtySoldDto.class).getMappedResults();
     }
 
+    public List<ItemSubTotalDto> getItemSubTotal() {
+        UnwindOperation unwind = unwind("items");
+        ProjectionOperation project = project()
+                .and("items.name").as("itemName")
+                .and("items.price").as("price")
+                .and("items.qty").as("quantity")
+                .and(ArithmeticOperators.valueOf("items.qty")
+                        .multiplyBy("items.price"))
+                .as("itemSubTotal")
+                .andExclude("_id");
+        Aggregation agg = newAggregation(unwind, project);
+        return mongoTemplate.aggregate(agg, COLLECTION, ItemSubTotalDto.class).getMappedResults();
+    }
+
 
 }
