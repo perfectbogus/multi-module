@@ -213,7 +213,6 @@ public class SalesAnalyticsService {
         return mongoTemplate.aggregate(agg, COLLECTION, ItemUnwoundDto.class).getMappedResults();
     }
 
-
     public List<ItemUnwoundDto> getDetailsPerCategory(String category) {
         UnwindOperation unwind = unwind("items");
         MatchOperation match = match(Criteria.where("items.category").is(category));
@@ -225,4 +224,13 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(unwind, match, project);
         return mongoTemplate.aggregate(agg, COLLECTION, ItemUnwoundDto.class).getMappedResults();
     }
+
+    public List<TotalQtySoldDto> getTotalQtySold() {
+        UnwindOperation unwind = unwind("items");
+        GroupOperation group = group("items.name").sum("items.qty").as("totalQuantitySold");
+        Aggregation agg = newAggregation(unwind, group);
+        return mongoTemplate.aggregate(agg, COLLECTION, TotalQtySoldDto.class).getMappedResults();
+    }
+
+
 }

@@ -148,4 +148,9 @@ public class SalesAnalyticsController {
     public List<ItemUnwoundDto> getItemUnwoundPerCategory(@PathVariable String category) {
         return analyticsSvc.getDetailsPerCategory(category);
     }
+
+    @GetMapping("/total-quantity-sold")
+    public List<TotalQtySoldDto> getTotalQtySold() {
+        return analyticsSvc.getTotalQtySold();
+    }
 }
