@@ -163,4 +163,16 @@ public class SalesAnalyticsController {
     public List<UnwoundOrderDto> getOrderItemsEmpty() {
         return analyticsSvc.getEmptyItems();
     }
+
+    @GetMapping("/revenue-by-city")
+    public List<RevenueByCityDto> getRevenueByCity() {
+        return analyticsSvc.getRevenueByCity();
+    }
+
+    @GetMapping("/qty-sold-electronics")
+    public List<TotalQtySoldDto> getTotalQtySoldElectronics() {
+        return analyticsSvc.getTotalQuantitySoldElectronics();
+    }
+
+
 }

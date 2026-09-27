@@ -252,5 +252,20 @@ public class SalesAnalyticsService {
         return mongoTemplate.aggregate(agg, COLLECTION, UnwoundOrderDto.class).getMappedResults();
     }
 
+    public List<RevenueByCityDto> getRevenueByCity() {
+        GroupOperation group = group("customer.city")
+                .sum("totalAmount").as("totalCityRevenue");
+        Aggregation agg = newAggregation(group);
+        return mongoTemplate.aggregate(agg, COLLECTION, RevenueByCityDto.class).getMappedResults();
+    }
+
+    public List<TotalQtySoldDto> getTotalQuantitySoldElectronics() {
+        UnwindOperation unwind = unwind("items");
+        MatchOperation match = match(Criteria.where("items.category").is("Electronics"));
+        GroupOperation group = group("items.name")
+                .sum("items.qty").as("totalQuantitySold");
+        Aggregation agg = newAggregation(unwind, match, group);
+        return mongoTemplate.aggregate(agg, COLLECTION, TotalQtySoldDto.class).getMappedResults();
+    }
 
 }
