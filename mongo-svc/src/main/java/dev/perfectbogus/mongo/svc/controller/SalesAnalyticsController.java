@@ -2,6 +2,7 @@ package dev.perfectbogus.mongo.svc.controller;
 
 import dev.perfectbogus.mongo.svc.dto.order.*;
 import dev.perfectbogus.mongo.svc.entity.Order;
+import dev.perfectbogus.mongo.svc.service.CustomerSpentDto;
 import dev.perfectbogus.mongo.svc.service.SalesAnalyticsService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -177,5 +178,10 @@ public class SalesAnalyticsController {
     @GetMapping("/categery-revenue")
     public List<CategoryRevenueDto> getCategoryRevenue() {
         return analyticsSvc.getCategoryRevenue();
+    }
+
+    @GetMapping("/customer-spent")
+    public List<CustomerSpentDto> getCustomerSpent() {
+        return analyticsSvc.getCustomerSpent();
     }
 }

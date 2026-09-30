@@ -277,4 +277,12 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(unwind, group, sort);
         return mongoTemplate.aggregate(agg, COLLECTION, CategoryRevenueDto.class).getMappedResults();
     }
+
+    public List<CustomerSpentDto> getCustomerSpent() {
+        GroupOperation group = group("customer.name")
+                .sum("totalAmount").as("totalSpent");
+        LimitOperation limit = limit(3);
+        Aggregation agg = newAggregation(group, limit);
+        return mongoTemplate.aggregate(agg, COLLECTION, CustomerSpentDto.class).getMappedResults();
+    }
 }
