@@ -184,4 +184,10 @@ public class SalesAnalyticsController {
     public List<CustomerSpentDto> getCustomerSpent() {
         return analyticsSvc.getCustomerSpent();
     }
+
+    @GetMapping("/items-name-total-quantity-sold")
+    public List<ItemsNameTotalQtySoldDto> getItemsNameTotalQuantitySold() {
+        return analyticsSvc.getItemNameTotalQuantitySold();
+    }
+
 }

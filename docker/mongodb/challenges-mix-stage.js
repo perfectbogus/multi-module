@@ -154,25 +154,63 @@ db.orders.aggregate([
   {
     $group: {
       _id: "$items.category",
-      categoryRevenue: { $sum:  "totalAmount" }
+      categoryRevenue: { $sum : { $multiply: ["$items.qty", "$items.price"]}}
     }
   },
 
-  { $sort: -1 }
+  { $sort: { categoryRevenue: -1}}
 ]);
 
-Challenge 5: Top Spending Customers
 
+Challenge 5: Top Spending Customers
 Goal: Group orders by customer name (customer.name) to calculate their lifetime spend (totalSpent), and return the top 3 highest-spending customers sorted descending.
 
-Challenge 6: High-Value Item Filter & Average
+db.orders.aggregate([
+  {
+    $group: {
+      _id: "$customer.name",
+      totalSpent: {$sum: "totalAmount"}
+    }
+  },
 
-Goal: Unwind items, filter for individual items with a unit price greater than $100, group by category, and calculate the average price of those items per category.
+  {$limit: 3}
+]);
+
+Challenge 6: High-Value Item Filter & Average
+Goal: Unwind items, filter for individual items with a unit price greater than $100, group by category, and calculate the 
+average price of those items per category.
+
+db.orders.aggregate([
+  {$unwind: "$items"},
+  {$match: { "$items.price": { $gt: 100}}},
+  {$group: {
+    _id: "$items.category",
+    averagePrice: {$avg: "$items.price"}
+  }}
+]);
+
+db.orders.aggregate([
+  {$unwind: "$items"},
+  {$match: { "items.price": { $gt: 100}}},
+  {$group: {
+    _id: "$items.category",
+    averagePrice: {$avg: "$items.price"}
+  }}
+]);
 
 Phase 3: Advanced Multi-Stage Pipelines
 Challenge 7: Bulk Order Item Analysis
-
 Goal: Unwind items, filter out any item where qty is less than 2, group by item name to calculate total quantity sold, and sort ascending by that total quantity.
+
+db.orders.aggregate([
+  {$unwind: "$items"},
+  {$match: {"items.qty": {$gte: 2}}},
+  {$group:{
+    _id: "$items.name",
+    totalQuantitySold: {$sum: "$items.qty"}
+  }},
+  {$sort: {totalQuantitySold: 1}}
+]);
 
 Challenge 8: Order Summary with Item Counts
 

@@ -285,4 +285,14 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(group, limit);
         return mongoTemplate.aggregate(agg, COLLECTION, CustomerSpentDto.class).getMappedResults();
     }
+
+    public List<ItemsNameTotalQtySoldDto> getItemNameTotalQuantitySold() {
+        UnwindOperation unwind = unwind("items");
+        MatchOperation match = match(Criteria.where("items.qty").gte(2));
+        GroupOperation group = group("items.name")
+                .sum("items.qty").as("totalQuantitySold");
+        SortOperation sort = sort(Sort.Direction.ASC, "totalQuantitySold");
+        Aggregation agg = newAggregation(unwind, match, group, sort);
+        return mongoTemplate.aggregate(agg, COLLECTION, ItemsNameTotalQtySoldDto.class).getMappedResults();
+    }
 }
