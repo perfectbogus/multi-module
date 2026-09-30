@@ -174,5 +174,8 @@ public class SalesAnalyticsController {
         return analyticsSvc.getTotalQuantitySoldElectronics();
     }
 
-
+    @GetMapping("/categery-revenue")
+    public List<CategoryRevenueDto> getCategoryRevenue() {
+        return analyticsSvc.getCategoryRevenue();
+    }
 }

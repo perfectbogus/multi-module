@@ -145,9 +145,21 @@ db.orders.aggregate([
 
 Phase 2: Analytics & Sorting Combinations
 Challenge 4: Top Revenue Categories
-
 Goal: Unwind the items array, group by item category (items.category) to calculate total revenue per category (categoryRevenue), 
 and sort the results in descending order.
+
+db.orders.aggregate([
+  { $unwind: "$items"},
+
+  {
+    $group: {
+      _id: "$items.category",
+      categoryRevenue: { $sum:  "totalAmount" }
+    }
+  },
+
+  { $sort: -1 }
+]);
 
 Challenge 5: Top Spending Customers
 

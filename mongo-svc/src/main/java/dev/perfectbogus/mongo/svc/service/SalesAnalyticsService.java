@@ -268,4 +268,13 @@ public class SalesAnalyticsService {
         return mongoTemplate.aggregate(agg, COLLECTION, TotalQtySoldDto.class).getMappedResults();
     }
 
+    public List<CategoryRevenueDto> getCategoryRevenue() {
+        UnwindOperation unwind = unwind("items");
+        GroupOperation group = group("items.category")
+                .sum(ArithmeticOperators.valueOf("items.qty").multiplyBy("items.price"))
+                .as("categoryRevenue");
+        SortOperation sort = sort(Sort.Direction.DESC, "categoryRevenue");
+        Aggregation agg = newAggregation(unwind, group, sort);
+        return mongoTemplate.aggregate(agg, COLLECTION, CategoryRevenueDto.class).getMappedResults();
+    }
 }

@@ -81,23 +81,6 @@ db.orders.aggregate([
       orderId: 1,
       itemName: "$items.name",Level 4: Using Polymorphism
 
-Create a RentalAgency class that:
-
-Stores a List<Vehicle> fleet
-addVehicle(Vehicle v): rejects duplicate IDs
-List<Vehicle> getAvailableVehicles()
-double rentVehicle(String id, int days): rents the vehicle and returns the cost
-List<Vehicle> getVehiclesNeedingService(): only vehicles that are Maintainable and need service
-void chargeAllElectric(int percent)
-void printFleetReport(): prints every vehicle. For electric vehicles, it also shows the battery level.
-
-Create a Main class that adds at least one vehicle of each type, rents a few, tests the error cases (renting twice, low battery, invalid year), and prints the report.
-      itemCategory: "$items.category",
-      itemPrice: "$items.price",
-      itemQty: "$items.qty"
-    }
-  }
-]);
 
 Challenge 2: $unwind + $match
 Goal: Unwind the items array, then filter the resulting documents to return only individual items where items.category is equal 
