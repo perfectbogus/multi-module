@@ -190,4 +190,9 @@ public class SalesAnalyticsController {
         return analyticsSvc.getItemNameTotalQuantitySold();
     }
 
+    @GetMapping("/best-selling-roduct")
+    public BestSellingDto getBestSelling() {
+        return analyticsSvc.getBestSelling();
+    }
+
 }

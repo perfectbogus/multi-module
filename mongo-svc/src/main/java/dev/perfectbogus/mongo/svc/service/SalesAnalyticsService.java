@@ -295,4 +295,14 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(unwind, match, group, sort);
         return mongoTemplate.aggregate(agg, COLLECTION, ItemsNameTotalQtySoldDto.class).getMappedResults();
     }
+
+    public BestSellingDto getBestSelling() {
+        UnwindOperation unwind = unwind("items");
+        GroupOperation group = group("items.name")
+                .sum("items.qty").as("totalSold");
+        SortOperation sort = sort(Sort.Direction.DESC,"totalSold");
+        LimitOperation limit = limit(1);
+        Aggregation agg = newAggregation(unwind, group, sort, limit);
+        return mongoTemplate.aggregate(agg, COLLECTION, BestSellingDto.class).getUniqueMappedResult();
+    }
 }
