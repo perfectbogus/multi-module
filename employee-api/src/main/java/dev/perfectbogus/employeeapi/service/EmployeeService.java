@@ -112,4 +112,12 @@ public class EmployeeService {
         return mapper.toResponsePage(page);
     }
 
+    @Transactional
+    public EmployeeResponse restore(Long id) {
+        Employee employee = getById(id);
+        employee.setActive(true);
+        Employee save = repository.save(employee);
+        return mapper.toResponse(save);
+    }
+
 }

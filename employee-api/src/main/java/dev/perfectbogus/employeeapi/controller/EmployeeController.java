@@ -28,7 +28,7 @@ public class EmployeeController {
             @RequestParam(required = false) String department,
             @RequestParam(required = false) Double minSalary,
             @RequestParam(required = false) Double maxSalary,
-            @RequestParam(required = false) Boolean includeInactive,
+            @RequestParam(defaultValue = "false") Boolean includeInactive,
             Pageable pageable
     ) {
         return service.filter(department, minSalary, maxSalary, includeInactive, pageable);
@@ -53,5 +53,10 @@ public class EmployeeController {
     @PatchMapping("/{id}")
     public EmployeeResponse patch(@PathVariable Long id, @RequestBody EmployeePatchRequest request) {
         return service.patch(id, request);
+    }
+
+    @PutMapping("/{id}/restore")
+    public EmployeeResponse restore(@PathVariable Long id) {
+        return service.restore(id);
     }
 }
