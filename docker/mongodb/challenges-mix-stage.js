@@ -213,13 +213,45 @@ db.orders.aggregate([
 ]);
 
 Challenge 8: Order Summary with Item Counts
+Goal: Unwind items, group by orderId to count how many distinct items are in each order (itemCount) alongside 
+the order's total amount, then sort by item count descending.'
 
-Goal: Unwind items, group by orderId to count how many distinct items are in each order (itemCount) alongside the order's total amount, then sort by item count descending.
+db.orders.aggregate([
+  {$unwind: "$items"},
+  {$group: {
+    _id: "$orderId",
+    itemCount: {$sum: 1},
+    totalAmount: {$first: "$totalAmount"}
+  }},
+  {$sort: {itemCount: -1}}
+]);
 
 Challenge 9: Best-Selling Products Leaderboard
+Goal: Unwind items, group by item name to calculate total units sold (totalSold), sort descending, and use $limit to return only
+ the single best-selling product across the entire collection.
 
-Goal: Unwind items, group by item name to calculate total units sold (totalSold), sort descending, and use $limit to return only the single best-selling product across the entire collection.
+db.orders.aggregate([
+  {$unwind: "$items"},
+  {$group: {
+    _id: "$items.name",
+    totalSold: {$sum: "$items.qty"}
+  }},
+  {$sort: {"totalSold": -1}},
+  {$limit: 1}
+]);
 
 Challenge 10: The Ultimate Multi-Stage Pipeline
 
-Goal: Filter orders to exclude "CANCELLED" status, unwind the items array, group by category to find total revenue generated per category, sort descending, and return only the top 2 revenue-generating categories.
+Goal: Filter orders to exclude "CANCELLED" status, unwind the items array, group by category to find total revenue generated
+ per category, sort descending, and return only the top 2 revenue-generating categories.
+
+db.orders.aggregate([
+  {$match: { status:{ $ne: "CANCELLED"}}},
+  {$unwind: "$items"},
+  {$group:{
+    _id: "$items.category",
+    totalRevenue: {$sum: {$multiply: ["$items.qty", "$items.price"]}}
+  }},
+  {$sort: { totalRevenue: -1}},
+  {$limit: 2}
+]);
