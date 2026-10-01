@@ -30,7 +30,7 @@ public class EmployeeMapper {
 
     public List<EmployeeResponse> toResponseList(List<Employee> employees) {
         return employees.stream()
-                .map(e -> new EmployeeResponse(e.getId(), e.getName(), e.getDepartment(), e.getSalary()))
+                .map(this::toResponse)
                 .toList();
     }
 

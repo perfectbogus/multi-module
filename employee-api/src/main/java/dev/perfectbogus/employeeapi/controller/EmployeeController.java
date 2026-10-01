@@ -28,9 +28,10 @@ public class EmployeeController {
             @RequestParam(required = false) String department,
             @RequestParam(required = false) Double minSalary,
             @RequestParam(required = false) Double maxSalary,
+            @RequestParam(required = false) Boolean includeInactive,
             Pageable pageable
     ) {
-        return service.filter(department, minSalary, maxSalary, pageable);
+        return service.filter(department, minSalary, maxSalary, includeInactive, pageable);
     }
 
     @GetMapping("/{id}")

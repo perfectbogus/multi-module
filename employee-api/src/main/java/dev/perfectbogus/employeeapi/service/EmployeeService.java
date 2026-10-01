@@ -38,8 +38,9 @@ public class EmployeeService {
 
     @Transactional
     public void delete(Long id) {
-        getById(id);
-        repository.deleteById(id);
+        Employee employee = getById(id);
+        employee.setActive(false);
+        repository.save(employee);
     }
 
     @Transactional
@@ -73,23 +74,39 @@ public class EmployeeService {
             String department,
             Double minSalary,
             Double maxSalary,
+            Boolean includeInactive,
             Pageable pageable) {
         boolean hasDept = department != null;
         boolean hasMin = minSalary != null;
         boolean hasMax = maxSalary != null;
+        boolean activeOnly = !Boolean.TRUE.equals(includeInactive);
 
         double min = hasMin ? minSalary : 0.0;
         double max = hasMax ? maxSalary : Double.MAX_VALUE;
 
         Page<Employee> page;
-        if (!hasDept && !hasMin && !hasMax) {
-            page = repository.findAll(pageable);
-        } else if ( hasDept && !hasMin && !hasMax) {
-            page = repository.findByDepartmentIgnoreCase(department, pageable);
-        } else if (!hasDept) {
-            page = repository.findBySalaryBetween(min, max, pageable);
+        if (activeOnly) {
+            if (!hasDept && !hasMin && !hasMax) {
+                page = repository.findByActiveTrue(pageable);
+            } else if (hasDept && !hasMin && !hasMax) {
+                page = repository.findByActiveTrueAndDepartmentIgnoreCase(department, pageable);
+            } else if (!hasDept) {
+                page = repository.findByActiveTrueAndSalaryBetween(min, max, pageable);
+            } else {
+                page = repository.findByDepartmentIgnoreCaseAndSalaryBetween(department, min, max, pageable);
+            }
         } else {
-            page = repository.findByDepartmentIgnoreCaseAndSalaryBetween(department, min, max, pageable);
+            if (!hasDept && !hasMin && !hasMax)
+                page = repository.findAll(pageable);
+            else if (hasDept && !hasMin && !hasMax)
+                page = repository.findByDepartmentIgnoreCase(
+                        department, pageable);
+            else if (!hasDept)
+                page = repository.findBySalaryBetween(
+                        min, max, pageable);
+            else
+                page = repository.findByDepartmentIgnoreCaseAndSalaryBetween(
+                        department, min, max, pageable);
         }
 
         return mapper.toResponsePage(page);
