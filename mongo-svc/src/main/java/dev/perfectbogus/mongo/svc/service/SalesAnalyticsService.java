@@ -296,6 +296,16 @@ public class SalesAnalyticsService {
         return mongoTemplate.aggregate(agg, COLLECTION, ItemsNameTotalQtySoldDto.class).getMappedResults();
     }
 
+    public List<OrderSummaryDto> getOrderSummary() {
+        UnwindOperation unwind = unwind("items");
+        GroupOperation group = group("orderId")
+                .count().as("itemCount")
+                .first("totalAmount").as("totalAmount");
+        SortOperation sort = sort(Sort.Direction.DESC, "itemCount");
+        Aggregation agg = newAggregation(unwind, group, sort);
+        return mongoTemplate.aggregate(agg, COLLECTION, OrderSummaryDto.class).getMappedResults();
+    }
+
     public BestSellingDto getBestSelling() {
         UnwindOperation unwind = unwind("items");
         GroupOperation group = group("items.name")
