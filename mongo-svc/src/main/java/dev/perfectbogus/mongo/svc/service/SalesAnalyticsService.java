@@ -315,4 +315,17 @@ public class SalesAnalyticsService {
         Aggregation agg = newAggregation(unwind, group, sort, limit);
         return mongoTemplate.aggregate(agg, COLLECTION, BestSellingDto.class).getUniqueMappedResult();
     }
+
+    public List<RevenueByCategoryDto> getRevenueByCategory() {
+        MatchOperation match = match(Criteria.where("status").ne("CANCELLED"));
+        UnwindOperation unwind = unwind("items");
+        GroupOperation group = group("items.category")
+                .sum(ArithmeticOperators.valueOf("items.qty").multiplyBy("items.price"))
+                .as("totalRevenue");
+        SortOperation sort = sort(Sort.Direction.DESC,"totalRevenue");
+        LimitOperation limit = limit(2);
+        Aggregation agg = newAggregation(match, unwind, group, sort, limit);
+        return mongoTemplate.aggregate(agg, COLLECTION, RevenueByCategoryDto.class).getMappedResults();
+    }
+
 }
