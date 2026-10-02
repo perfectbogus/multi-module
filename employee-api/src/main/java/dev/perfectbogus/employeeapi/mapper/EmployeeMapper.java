@@ -16,6 +16,7 @@ public class EmployeeMapper {
                 .name(request.getName())
                 .department(request.getDepartment())
                 .salary(request.getSalary())
+                .active(true)
                 .build();
     }
 
@@ -24,7 +25,10 @@ public class EmployeeMapper {
                 employee.getId(),
                 employee.getName(),
                 employee.getDepartment(),
-                employee.getSalary()
+                employee.getSalary(),
+                employee.isActive(),
+                employee.getCreatedAt(),
+                employee.getUpdatedAt()
         );
     }
 

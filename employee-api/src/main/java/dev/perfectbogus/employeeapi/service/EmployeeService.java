@@ -23,9 +23,11 @@ public class EmployeeService {
 
     @Transactional(readOnly = true)
     public Employee getById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new EmployeeNotFoundException(id));
+        return repository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new EmployeeNotFoundException(id));
     }
 
+    @Transactional(readOnly = true)
     public EmployeeResponse getEmployeeResponseById(Long id) {
         return mapper.toResponse(getById(id));
     }
@@ -93,7 +95,7 @@ public class EmployeeService {
             } else if (!hasDept) {
                 page = repository.findByActiveTrueAndSalaryBetween(min, max, pageable);
             } else {
-                page = repository.findByDepartmentIgnoreCaseAndSalaryBetween(department, min, max, pageable);
+                page = repository.findByActiveTrueAndDepartmentIgnoreCaseAndSalaryBetween(department, min, max, pageable);
             }
         } else {
             if (!hasDept && !hasMin && !hasMax)
@@ -114,10 +116,10 @@ public class EmployeeService {
 
     @Transactional
     public EmployeeResponse restore(Long id) {
-        Employee employee = getById(id);
+        Employee employee = repository.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException(id));
         employee.setActive(true);
-        Employee save = repository.save(employee);
-        return mapper.toResponse(save);
+        return mapper.toResponse(repository.save(employee));
     }
 
 }

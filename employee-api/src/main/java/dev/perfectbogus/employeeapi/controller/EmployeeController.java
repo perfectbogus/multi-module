@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -56,7 +57,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}/restore")
-    public EmployeeResponse restore(@PathVariable Long id) {
-        return service.restore(id);
+    public ResponseEntity<EmployeeResponse> restore(@PathVariable Long id) {
+        return ResponseEntity.ok(service.restore(id));
     }
 }
