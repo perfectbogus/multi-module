@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
@@ -17,4 +18,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Page<Employee> findByActiveTrueAndDepartmentIgnoreCaseAndSalaryBetween(
             String dept, Double min, Double max, Pageable pageable);
     Optional<Employee> findByIdAndActiveTrue(Long id);
+    long countByActiveTrue();
+    List<Employee> findByActiveTrue();
 }

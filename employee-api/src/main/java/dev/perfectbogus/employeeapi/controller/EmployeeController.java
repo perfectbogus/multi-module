@@ -1,9 +1,6 @@
 package dev.perfectbogus.employeeapi.controller;
 
-import dev.perfectbogus.employeeapi.dto.CreateEmployeeRequest;
-import dev.perfectbogus.employeeapi.dto.EmployeePatchRequest;
-import dev.perfectbogus.employeeapi.dto.EmployeeResponse;
-import dev.perfectbogus.employeeapi.dto.PageResponse;
+import dev.perfectbogus.employeeapi.dto.*;
 import dev.perfectbogus.employeeapi.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class EmployeeController {
     private final EmployeeService service;
+
+    @GetMapping("/stats")
+    public EmployeeStats getStats() {
+        return service.getStats();
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

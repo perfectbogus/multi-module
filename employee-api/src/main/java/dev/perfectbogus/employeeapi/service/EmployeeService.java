@@ -1,9 +1,6 @@
 package dev.perfectbogus.employeeapi.service;
 
-import dev.perfectbogus.employeeapi.dto.CreateEmployeeRequest;
-import dev.perfectbogus.employeeapi.dto.EmployeePatchRequest;
-import dev.perfectbogus.employeeapi.dto.EmployeeResponse;
-import dev.perfectbogus.employeeapi.dto.PageResponse;
+import dev.perfectbogus.employeeapi.dto.*;
 import dev.perfectbogus.employeeapi.exception.EmployeeNotFoundException;
 import dev.perfectbogus.employeeapi.mapper.EmployeeMapper;
 import dev.perfectbogus.employeeapi.model.Employee;
@@ -14,6 +11,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -120,6 +123,35 @@ public class EmployeeService {
                 .orElseThrow(() -> new EmployeeNotFoundException(id));
         employee.setActive(true);
         return mapper.toResponse(repository.save(employee));
+    }
+
+    @Transactional(readOnly = true)
+    public EmployeeStats getStats() {
+        long totalEmployees = repository.count();
+        long activeEmployees = repository.countByActiveTrue();
+        long inactiveEmployees = totalEmployees - activeEmployees;
+        List<Employee> activeEmployeesList = repository.findByActiveTrue();
+        DoubleSummaryStatistics stats = activeEmployeesList.stream()
+                .mapToDouble(Employee::getSalary).summaryStatistics();
+        Map<String, Long> employeeCountByDept = activeEmployeesList.stream().collect(Collectors.groupingBy(
+                Employee::getDepartment,
+                Collectors.counting()
+        ));
+        Map<String, Double> averageSalaryByDept = activeEmployeesList.stream().collect(Collectors.groupingBy(
+                Employee::getDepartment,
+                Collectors.averagingDouble(Employee::getSalary)
+        ));
+
+        return new EmployeeStats(
+                totalEmployees,
+                activeEmployees,
+                inactiveEmployees,
+                stats.getAverage(),
+                stats.getMax(),
+                stats.getMin(),
+                employeeCountByDept,
+                averageSalaryByDept
+        );
     }
 
 }
