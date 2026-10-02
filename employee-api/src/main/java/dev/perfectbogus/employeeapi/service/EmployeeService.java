@@ -133,6 +133,12 @@ public class EmployeeService {
         List<Employee> activeEmployeesList = repository.findByActiveTrue();
         DoubleSummaryStatistics stats = activeEmployeesList.stream()
                 .mapToDouble(Employee::getSalary).summaryStatistics();
+
+        double avg = activeEmployeesList.isEmpty() ? 0.0 : stats.getAverage();
+        double highest = activeEmployeesList.isEmpty() ? 0.0 : stats.getMax();
+        double lowest = activeEmployeesList.isEmpty() ? 0.0 : stats.getMin();
+
+
         Map<String, Long> employeeCountByDept = activeEmployeesList.stream().collect(Collectors.groupingBy(
                 Employee::getDepartment,
                 Collectors.counting()
@@ -146,9 +152,9 @@ public class EmployeeService {
                 totalEmployees,
                 activeEmployees,
                 inactiveEmployees,
-                stats.getAverage(),
-                stats.getMax(),
-                stats.getMin(),
+                avg,
+                highest,
+                lowest,
                 employeeCountByDept,
                 averageSalaryByDept
         );

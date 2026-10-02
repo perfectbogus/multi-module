@@ -4,8 +4,8 @@ import java.util.Map;
 
 public record EmployeeStats(
         long totalEmployees,
-        long activeEmployee,
-        long inactiveEmployee,
+        long activeEmployees,
+        long inactiveEmployees,
         double averageSalary,
         double highestSalary,
         double lowestSalary,
