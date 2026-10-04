@@ -3,6 +3,7 @@ package dev.perfectbogus.employeeapi.integration;
 import dev.perfectbogus.employeeapi.dto.CreateEmployeeRequest;
 import dev.perfectbogus.employeeapi.repository.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -12,7 +13,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.ObjectMapper;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -47,5 +50,20 @@ public class EmployeeIntegrationTest {
                 .andExpect(status().isCreated())
                 .andReturn();
         return objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asLong();
+    }
+
+    @Test
+    void create_validEmployee_savedInDatabase() throws Exception {
+        mockMvc.perform(post("/employees")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(toJson(buildRequest("Alice", "Engineering", 90000))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.name").value("Alice"))
+                .andExpect(jsonPath("$.active").value(true))
+                .andExpect(jsonPath("$.createdAt").exists());
+
+        // Verify actually saved in DB
+        assertEquals(1, repository.count());
     }
 }
