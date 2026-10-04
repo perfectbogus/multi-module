@@ -144,6 +144,19 @@ public class EmployeeIntegrationTest {
                 .andExpect(jsonPath("$.totalElements").value(1));
     }
 
+    @Test
+    void update_existingEmployee_replacesAllFields() throws Exception {
+        Long id = createEmployee("Alice", "Engineering", 90000);
 
+        CreateEmployeeRequest update = buildRequest("Alice Updated", "HR", 95000);
+
+        mockMvc.perform(put("/employees/" + id)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(toJson(update)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Alice Updated"))
+                .andExpect(jsonPath("$.department").value("HR"))
+                .andExpect(jsonPath("$.salary").value(95000.0));
+    }
 
 }
