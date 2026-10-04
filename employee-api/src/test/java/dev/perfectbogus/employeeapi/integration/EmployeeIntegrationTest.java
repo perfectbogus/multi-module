@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -89,5 +89,61 @@ public class EmployeeIntegrationTest {
 
         assertEquals(0, repository.count());
     }
+
+    @Test
+    void getById_existingEmployee_returns200() throws Exception {
+        Long id = createEmployee("Alice", "Engineering", 90000);
+        mockMvc.perform(get("/employees/" + id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.name").value("Alice"));
+    }
+
+    @Test
+    void getById_nonExistent_return404() throws Exception {
+        mockMvc.perform(get("/employees/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("NOT_FOUND"));
+    }
+
+    @Test
+    void delete_softDeletesEmployee() throws Exception {
+        Long id = createEmployee("Alice", "Engineering", 90000);
+
+        mockMvc.perform(delete("/employees/" + id))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/employees"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(0));
+
+        mockMvc.perform(get("/employees?includeInactive=true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].active").value(false));
+
+        assertEquals(1, repository.count());
+
+        mockMvc.perform(get("/employees/" + id))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void restore_softDeletedEmployee_reactivates() throws Exception {
+        Long id = createEmployee("Alice", "Engineering", 90000);
+
+        mockMvc.perform(delete("/employees/" + id))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(put("/employees/" + id + "/restore"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.active").value(true));
+
+        mockMvc.perform(get("/employees"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(1));
+    }
+
+
 
 }
