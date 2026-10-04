@@ -66,4 +66,16 @@ public class EmployeeIntegrationTest {
         // Verify actually saved in DB
         assertEquals(1, repository.count());
     }
+
+    @Test
+    void create_negativeSalary_return400() throws Exception {
+        mockMvc.perform(post("/employees")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(toJson(buildRequest("", "Engineering", 90000))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.message").exists());
+
+        assertEquals(0, repository.count());
+    }
 }
