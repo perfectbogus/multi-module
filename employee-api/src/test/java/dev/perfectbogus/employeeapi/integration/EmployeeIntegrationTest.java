@@ -68,7 +68,7 @@ public class EmployeeIntegrationTest {
     }
 
     @Test
-    void create_negativeSalary_return400() throws Exception {
+    void create_blankName_returns400() throws Exception {
         mockMvc.perform(post("/employees")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(toJson(buildRequest("", "Engineering", 90000))))
@@ -78,4 +78,16 @@ public class EmployeeIntegrationTest {
 
         assertEquals(0, repository.count());
     }
+
+    @Test
+    void create_negativeSalary_returns400() throws Exception {
+        mockMvc.perform(post("/employees")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(toJson(buildRequest("Alice", "Engineering", -80000))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"));
+
+        assertEquals(0, repository.count());
+    }
+
 }
