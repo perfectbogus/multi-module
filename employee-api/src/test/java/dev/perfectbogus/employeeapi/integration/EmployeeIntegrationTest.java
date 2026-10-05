@@ -160,6 +160,21 @@ public class EmployeeIntegrationTest {
     }
 
     @Test
+    void patch_partialUpdate_onlyChangesSpecifiedFields() throws Exception {
+        Long id = createEmployee("Alice", "Engineering", 90000);
+
+        mockMvc.perform(patch("/employees/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"salary": 99000}
+                        """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Alice"))
+                .andExpect(jsonPath("$.department").value("Engineering"))
+                .andExpect(jsonPath("$.salary").value(99000));
+    }
+
+    @Test
     void getAll_withPagination_returnCorrectMetadata() throws Exception {
         for (int i = 1; i <= 15; i++) {
             createEmployee("Employee " + i, "Engineering", 50000 + i * 1000);
@@ -176,6 +191,9 @@ public class EmployeeIntegrationTest {
         mockMvc.perform(get("/employees?page=2&size=5"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(5))
+                .andExpect(jsonPath("$.page").value(2))
+                .andExpect(jsonPath("$.totalPages").value(3))
+                .andExpect(jsonPath("$.first").value(false))
                 .andExpect(jsonPath("$.last").value(true));
     }
 
@@ -189,6 +207,36 @@ public class EmployeeIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements").value(2))
                 .andExpect(jsonPath("$.content[0].department").value("Engineering"));
+    }
+
+    @Test
+    void getAll_filterBySalaryRange_returnsOnlyMatching() throws Exception {
+        createEmployee("Alice", "Engineering", 90000);
+        createEmployee("Bob",   "Engineering", 50000);
+        createEmployee("Carol", "Engineering", 70000);
+
+        mockMvc.perform(get("/employees?minSalary=60000&maxSalary=95000"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(2));
+    }
+
+    @Test
+    void stats_afterSoftDelete_updatesActiveCount() throws Exception {
+        Long id = createEmployee("Alice", "Engineering", 90000);
+        createEmployee("Bob", "Engineering", 70000);
+
+        mockMvc.perform(delete("/employees/" + id));
+
+        mockMvc.perform(get("/employees/stats"))
+                .andExpect(jsonPath("$.totalEmployees").value(2))
+                .andExpect(jsonPath("$.activeEmployees").value(1))
+                .andExpect(jsonPath("$.inactiveEmployees").value(1));
+    }
+
+    @Test
+    void restore_nonExistent_return404() throws Exception {
+        mockMvc.perform(put("/employees/999/restore"))
+                .andExpect(status().isNotFound());
     }
 
     @Test

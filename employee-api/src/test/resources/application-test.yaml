@@ -5,5 +5,3 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: false
-  profiles:
-    active: test
