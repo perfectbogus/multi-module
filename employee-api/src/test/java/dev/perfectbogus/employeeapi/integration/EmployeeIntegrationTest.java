@@ -159,4 +159,36 @@ public class EmployeeIntegrationTest {
                 .andExpect(jsonPath("$.salary").value(95000.0));
     }
 
+    @Test
+    void getAll_withPagination_returnCorrectMetadata() throws Exception {
+        for (int i = 1; i <= 15; i++) {
+            createEmployee("Employee " + i, "Engineering", 50000 + i * 1000);
+        }
+
+        mockMvc.perform(get("/employees?page=0&size=5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(5))
+                .andExpect(jsonPath("$.totalElements").value(15))
+                .andExpect(jsonPath("$.totalPages").value(3))
+                .andExpect(jsonPath("$.first").value(true))
+                .andExpect(jsonPath("$.last").value(false));
+
+        mockMvc.perform(get("/employees?page=2&size=5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(5))
+                .andExpect(jsonPath("$.last").value(true));
+    }
+
+    @Test
+    void getAll_filterByDpt_returnsOnlyMatching() throws Exception {
+        createEmployee("Alice", "Engineering", 90000);
+        createEmployee("Bob", "Marketing", 70000);
+        createEmployee("Carol", "Engineering", 85000);
+
+        mockMvc.perform(get("/employees?department=Engineering"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.content[0].department").value("Engineering"));
+    }
+
 }
