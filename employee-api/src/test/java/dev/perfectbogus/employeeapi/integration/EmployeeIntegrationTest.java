@@ -191,4 +191,20 @@ public class EmployeeIntegrationTest {
                 .andExpect(jsonPath("$.content[0].department").value("Engineering"));
     }
 
+    @Test
+    void stats_reflectsCurrentData() throws Exception {
+        createEmployee("Alice", "Engineering", 90000);
+        createEmployee("Bob",   "Engineering", 70000);
+        createEmployee("Carol", "Marketing",   80000);
+
+        mockMvc.perform(get("/employees/stats"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalEmployees").value(3))
+                .andExpect(jsonPath("$.activeEmployees").value(3))
+                .andExpect(jsonPath("$.inactiveEmployees").value(0))
+                .andExpect(jsonPath("$.averageSalary").value(80000.0))
+                .andExpect(jsonPath("$.employeeCountByDepartment.Engineering").value(2))
+                .andExpect(jsonPath("$.employeeCountByDepartment.Marketing").value(1));
+    }
+
 }
