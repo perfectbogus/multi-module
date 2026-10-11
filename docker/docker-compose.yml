@@ -110,6 +110,26 @@ services:
       - kafka-net
     restart: unless-stopped
 
+  employee-api:
+    build:
+      context: ../employee-api
+      dockerfile: Dockerfile
+    container_name: employee-api
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:h2:mem:employeedb
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: ""
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-network
+
 # ─────────────────────────────────────────────────────────────────
 # Volumes & Networks
 # ─────────────────────────────────────────────────────────────────
@@ -119,4 +139,6 @@ volumes:
 
 networks:
   kafka-net:
+    driver: bridge
+  app-network:
     driver: bridge
