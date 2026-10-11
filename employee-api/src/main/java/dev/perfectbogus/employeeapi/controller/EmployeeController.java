@@ -74,6 +74,8 @@ public class EmployeeController {
     }
 
     @Operation(summary = "Partial update employee")
+    @ApiResponse(responseCode = "200", description = "Employee updated")
+    @ApiResponse(responseCode = "404", description = "Employee not found")
     @PatchMapping("/{id}")
     public EmployeeResponse patch(@PathVariable Long id, @RequestBody EmployeePatchRequest request) {
         return service.patch(id, request);
